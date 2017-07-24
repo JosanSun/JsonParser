@@ -1,4 +1,5 @@
 #Json解析器
+
 ##文件说明
 
 - **leptjsonC**
@@ -14,14 +15,17 @@
 这是这个项目的最终目标。看懂和实现Json11,源项目来自Dropbox的[Json11](https://github.com/dropbox/json11)里面运用许多C++11的特性
 
 ##Json介绍
+
 Json是由[道格拉斯·克罗克福特](https://en.wikipedia.org/wiki/Douglas_Crockford)(Douglas Crockford)设计出来的，是一种轻量级的数据交换语言，易于阅读和理解。Json是Javascript的一个子集，数据格式与语言无关。JSON的文件扩展名是`.json`
 
 ##预期成果
+
 - 获得一个可以成功解析JSON数据格式的解析器，包括C和C++两个版本。
 - 掌握cmake工具的使用方法
 - 熟悉测试驱动开发（TDD）的过程
 
 ##项目进展
+
 - [ ] leptjsonC
 - [ ] leptjsonCplusplus
 - [ ] JSON11
