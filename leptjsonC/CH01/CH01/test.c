@@ -3,101 +3,99 @@
 #include <stdlib.h>
 #include <string.h>
 
+//主函数的返回值，0为正常返回，非0存在错误
 static int main_ret = 0;
-static int test_count = 0;
+//测试数据的数量
+static int test_cnt = 0;
+//测试数据的通过数量
 static int test_pass = 0;
 
-#define EXPECT_EQ_BASE(equality, expect, actual, format) \
-    do {\
-        ++test_count;\
-        if(equality)\
-            ++test_pass;\
-        else{\
-             fprintf(stderr, "%s: %d line -- expect: " format " actual: " format "\n", __FILE__, __LINE__, expect, actual);\
-             main_ret = 1;\
-            }\
-    }while(0)
+#define EXPECT_EQ_BASE(equ, expt, actu, format) \
+	do {\
+		++test_cnt;\
+		if(equ)\
+			++test_pass;\
+		else{\
+				fprintf(stderr, "%s: %d line -- expect: " format " actual: " format "\n", __FILE__, __LINE__, expt, actu);\
+			main_ret = 1;\
+		}\
+	}while(0)
 
-#define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%d")
+#define EXPECT_EQ_INT(expt, actu) EXPECT_EQ_BASE((expt) == (actu), expt, actu, "%d")
 
-static void test_parse_null( )
+//测试null类型解析
+static void test_parse_null()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, " null "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, " null "));
+	EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
 }
 
-static void test_parse_true( )
+//测试true类型
+static void test_parse_true()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, " true "));
-    EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, " true "));
+	EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
 }
 
-static void test_parse_false( )
+//测试false类型
+static void test_parse_false()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "false"));
-    EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, " false "));
+	EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
 }
 
-static void test_parse_expect_value( )
+//测试期待值的情况，这种情况都是只有空白符的情况
+static void test_parse_expect_value()
 {
-    lept_value v;
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, ""));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, ""));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, " "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, " "));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 }
 
-static void test_parse_invalid_value( )
+//测试不合理的输入
+static void test_parse_invalid_value()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, "nul"));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, "nul"));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, " t r"));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, " t  r"));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 }
 
-static void test_parse_root_not_singular( )
+//测试不止是是单种类型
+static void test_parse_root_not_singular()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "null x"));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	lept_value v;
+	EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "null x"));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "  truex "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "   truex "));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
 
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "  false null x "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+	EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "   false  nul x"));
+	EXPECT_EQ_INT(LEPT_ERROR, lept_get_type(&v));
+}
+//总测试JSON解析器
+static void test_parse()
+{
+	test_parse_null();
+	test_parse_true();
+	test_parse_false();
+	test_parse_expect_value();
+	test_parse_invalid_value();
+	test_parse_root_not_singular();
 }
 
-static void test_parse( )
+int main()
 {
-    test_parse_null( );                       //2
-    test_parse_true( );                       //2
-    test_parse_false( );                      //2
-    test_parse_expect_value( );               //4
-    test_parse_invalid_value( );              //4
-    test_parse_root_not_singular( );          //6
-}
-
-int main( )
-{
-    test_parse( );
-    printf("%d/%d (%3.2f%%) passed\n", test_pass, test_count, test_pass*100.0 / test_count);
-    return main_ret;
+	test_parse();
+	printf("%d/%d  (%3.2f%%) passed\n", test_pass, test_cnt, test_pass*100.0 / test_cnt);
+	return main_ret;
 }
