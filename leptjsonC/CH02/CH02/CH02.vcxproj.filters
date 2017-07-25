@@ -21,6 +21,9 @@
     <ClCompile Include="leptjson.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="strtod_test.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="leptjson.h">

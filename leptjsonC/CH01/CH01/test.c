@@ -1,7 +1,5 @@
 #include "leptjson.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 //主函数的返回值，0为正常返回，非0存在错误
 static int main_ret = 0;

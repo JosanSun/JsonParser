@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="leptjson.c" />
+    <ClCompile Include="strtod_test.c" />
     <ClCompile Include="test.c" />
   </ItemGroup>
   <ItemGroup>

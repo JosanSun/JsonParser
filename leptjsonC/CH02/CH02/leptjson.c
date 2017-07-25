@@ -1,6 +1,6 @@
 #include "leptjson.h"
 #include <assert.h>      //assert()
-#include <stdlib.h>      //NULL
+#include <stdlib.h>      //NULL strtod()
 #include <errno.h>       //errno, ERANGE
 #include <ctype.h>       //isdigit()
 #include <math.h>        //HUGE_VAL
@@ -57,6 +57,7 @@ static int lept_parse_literal(lept_context* c, lept_value* v,
 //解析number类型
 static int lept_parse_number(lept_context* c, lept_value* v)
 {
+	
 	const char* p = c->json;
 	//----处理'-'
 	if('-' == *p)
@@ -109,6 +110,16 @@ static int lept_parse_number(lept_context* c, lept_value* v)
 	}
 	v->type = LEPT_NUMBER;
 	errno = 0;
+	//-----------------------注意直接用strtod()会将许多不合法的数值型都正确转换
+	////end用来测试strtod()是否解析成功,测试成功可以削去
+	/*char* end;
+	v->num = strtod(c->json, &end);
+	if(c->json == end)
+	{
+		return LEPT_PARSE_INVALID_VALUE;
+	}
+	c->json = end;*/
+	//-------------------------
 	v->num = strtod(c->json, NULL);
 	//上溢出和下溢出，都会是errno变为ERANGE（就是超出范围标记）
 	//后面的HUGE_VAL == v->num || -HUGE_VAL == v->num，是确定是正数上溢出inf，
