@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <string.h>   //memcmp
 
-//total number of test: 170
+//total number of previous test: 142
+//total number of current test:  177
 
 //去掉CH02 这个开关
 
@@ -39,11 +40,6 @@ static int test_pass = 0;
 //比较两个字符串是否相等
 #define EXPECT_EQ_STRING(expt, actu, len) \
 	EXPECT_EQ_BASE(sizeof(expt) - 1 == len && 0 == memcmp(expt, actu, len), expt, actu, "%s")
-#define EXPECT_EQ_TRUE(actu) \
-	EXPECT_EQ_BASE(0 != (actu), "true", "false", "%s")
-#define EXPECT_EQ_FALSE(actu) \
-	EXPECT_EQ_BASE(0 == (actu), "false", "true", "%s")
-
 
 //重构代码，将原来的测试简化 TEST_LITERAL可以用来测试null, true, false
 //它们的共同点都是解析成功，即返回LEPT_PARSE_OK;但是解析出来的元素类型存在不同
@@ -231,7 +227,6 @@ static void test_parse_invalid_string_char()
 }
 #endif
 
-
 //测试正确解析出类型的JSON元素
 static void test_parse_ok()
 {
@@ -245,7 +240,7 @@ static void test_parse_ok()
 #endif
 }
 
-//总测试JSON解析器
+//总测试JSON解析器的解析部分
 static void test_parse()
 {
 	test_parse_ok();
@@ -260,9 +255,101 @@ static void test_parse()
 #endif
 }
 
+//测试接入null的宏定义
+#define TEST_ACCESS_NULL(expt) \
+	do {\
+		lept_value val;\
+		lept_init(&val);\
+		lept_set_string(&val, "a", 1);\
+		lept_set_null(&val);\
+		EXPECT_EQ_INT(expt, lept_get_type(&val));\
+		lept_free(&val);\
+	}while(0)
+//测试接入null元素
+static void test_access_null()
+{
+	TEST_ACCESS_NULL(LEPT_NULL);
+}
+
+//判断两个boolean元素是否相等
+#define EXPECT_EQ_BOOLEAN(res, expt, actual)\
+	EXPECT_EQ_BASE((res), expt, actual, "%s")
+//测试接入boolean的宏定义
+#define TEST_ACCESS_BOOLEAN(expt_type, expt, n)\
+	do {\
+		lept_value val;\
+		lept_init(&val);\
+		lept_set_string(&val, "a", 1);\
+		lept_set_boolean(&val, n);\
+		EXPECT_EQ_BOOLEAN((expt_type == lept_get_boolean(&val)), expt,\
+			(n == 1 ? "true" : "false"));\
+	}while(0)
+//测试接入boolean元素
+static void test_access_boolean()
+{
+	TEST_ACCESS_BOOLEAN(LEPT_TRUE, "true", 1);
+	TEST_ACCESS_BOOLEAN(LEPT_FALSE, "false", 0);
+}
+
+//测试接入number的宏定义
+#define TEST_ACCESS_NUMBER(expt) \
+	do {\
+		lept_value val;\
+		lept_init(&val);\
+		lept_set_string(&val, "a", 1);\
+		lept_set_number(&val, expt);\
+		EXPECT_EQ_DOUBLE(expt, lept_get_number(&val));\
+		lept_free(&val);\
+	}while(0)
+//测试接入number
+static void test_access_number()
+{
+	//NOTE: C语言可以解析“05.6E25”为5.6E25
+	TEST_ACCESS_NUMBER(05.6E25);
+	TEST_ACCESS_NUMBER(1234.5);
+}
+
+//测试接入string的宏定义
+#define TEST_ACCESS_STRING(expt, len) \
+	do{\
+		lept_value val;\
+		lept_init(&val);\
+		lept_set_string(&val, expt, len);\
+		EXPECT_EQ_STRING(expt, lept_get_string(&val), lept_get_string_length(&val));\
+	}while(0)
+//测试接入string元素
+static void test_access_string()
+{
+	TEST_ACCESS_STRING("", 0);
+	TEST_ACCESS_STRING("Hello", 5);
+}
+
+#if CH03
+//总测试JSON解析器的接入部分
+static void test_access()
+{
+	test_access_null();
+	test_access_boolean();
+	test_access_number();
+	test_access_string();
+}
+#endif
+
+//总测试  测试：解析部分+接入部分
+static void test()
+{
+	//测试JSON解析器的解析部分
+	test_parse();
+#if CH03
+	//测试JSON解析器的接入部分
+	test_access();
+#endif
+}
+
 int main()
 {
-	test_parse();
+	//总测试器
+	test();
 	printf("%d/%d  (%3.2f%%) passed\n", test_pass, test_cnt, test_pass*100.0 / test_cnt);
 	return main_ret;
 }

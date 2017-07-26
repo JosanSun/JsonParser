@@ -1,6 +1,8 @@
 #include "leptjson.h"
 #include <stdio.h>
 
+//total number of test: 20
+
 //主函数的返回值，0为正常返回，非0存在错误
 static int main_ret = 0;
 //测试数据的数量

@@ -1,6 +1,9 @@
 #include "leptjson.h"
 #include <stdio.h>
 
+//total number of previous test: 20
+//total number of current test: 142
+
 //CH02作为CH02新增的测试用例的开关，
 //1表示加入这些新的测试用例，0表示关闭；
 //这样很容易比较与之前一章的测试用例不同点

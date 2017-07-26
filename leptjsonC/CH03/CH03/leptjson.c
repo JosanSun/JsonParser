@@ -332,7 +332,7 @@ void lept_set_null(lept_value* v)
 int lept_get_boolean(const lept_value* v)
 {
 	assert(NULL != v && (LEPT_TRUE == v->type || LEPT_FALSE == v->type));
-	return v->type == LEPT_TRUE;
+	return v->type;
 }
 
 void lept_set_boolean(lept_value* v, int b)
