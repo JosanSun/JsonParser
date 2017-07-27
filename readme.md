@@ -25,16 +25,24 @@ Json是由[道格拉斯·克罗克福特](https://en.wikipedia.org/wiki/Douglas_
 
 ## 项目进展
 
-- [ ] leptjsonC
+- [x] leptjsonC
+- [x] leptjsonC-CH01 null和boolean型解析
+- [x] leptjsonC-CH02 number型解析
+- [x] leptjsonC-CH03 string型解析1
+- [x] leptjsonC-CH04 string型解析2
+- [x] leptjsonC-CH05 array型解析
+- [x] leptjsonC-CH06 object型解析
+- [x] leptjsonC-CH07 JSON生成器
 - [ ] leptjsonCplusplus
 - [ ] JSON11
 ## 相关资料
 
 1. [JSON][1]介绍
+2. [JSON标准官方文件][4]　ECMA-404
 2. [json-tutorial][2]叶老师项目地址
 3. [JSON11][3]项目地址
 
 [1]: http://json.org/     "Introducing JSON"
 [2]: https://github.com/miloyip/json-tutorial "叶老师项目地址"
 [3]: https://github.com/dropbox/json11 "JSON11"
-
+[4]: http://link.zhihu.com/?target=http%3A//www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
