@@ -16,7 +16,8 @@ typedef enum
 //由于数组中，提前出现指向lept_value的指针，所以必须提前声明
 //不能直接声明struct lept_value; 必须使用typedef的声明
 typedef struct lept_value lept_value;
-
+//声明对象时需要的辅助元素
+typedef struct lept_member lept_member;
 //JSON数据元素，或数据结构，JSON是一个树形结构
 struct lept_value
 {
@@ -38,7 +39,21 @@ struct lept_value
 			lept_value* e;
 			size_t size;
 		}arr;
+		//obj用来保存object的对象元素，包括对象成员lept_member，以及对象数量size
+		struct
+		{
+			lept_member* m;
+			size_t size;
+		}obj;
 	}uni;
+};
+
+//JSON对象成员的类型， <key, val>一个键值对
+struct lept_member
+{
+	char* key;
+	size_t keyLen;
+	lept_value val;
 };
 
 /*
@@ -59,6 +74,10 @@ struct lept_value
  * LEPT_PARSE_INVALID_UNICODE_SURROGATE非法的代理对
  * ------------ CH05 ----------------
  * LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET表示解析数组时，数组元素缺少逗号或者']'
+ * ------------ CH06 ----------------
+ * LEPT_PARSE_MISS_KEY表示解析对象时，对象元素缺少相应的关键字
+ * LEPT_PARSE_MISS_COLON表示解析对象时，对象元素缺少冒号':'
+ * LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET表示解析对象时，对象元素缺少缺少逗号','或者大括号'}'
  */
 enum returnType
 {
@@ -67,7 +86,8 @@ enum returnType
 	LEPT_PARSE_NUMBER_TOO_BIG, LEPT_PARSE_MISS_QUOTATION_MARK,
 	LEPT_PARSE_INVALID_STRING_ESCAPE, LEPT_PARSE_INVALID_STRING_CHAR,
 	LEPT_PARSE_INVALID_UNICODE_HEX, LEPT_PARSE_INVALID_UNICODE_SURROGATE,
-	LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET
+	LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET, LEPT_PARSE_MISS_KEY,
+	LEPT_PARSE_MISS_COLON, LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET
 };
 
 //初始化json元素，将其元素的类型定义为LEPT_ERROR
@@ -97,4 +117,9 @@ void lept_set_string(lept_value* v, const char* s, size_t len);
 //array 元素
 lept_value* lept_get_array_element(const lept_value* v, size_t index);
 size_t lept_get_array_size(const lept_value* v);
+//object元素
+const char* lept_get_object_key(const lept_value* v, size_t index);
+size_t lept_get_object_key_length(const lept_value* v, size_t index);
+lept_value* lept_get_object_value(const lept_value* v, size_t index);
+size_t lept_get_object_size(const lept_value* v);
 #endif

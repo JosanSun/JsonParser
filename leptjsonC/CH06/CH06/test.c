@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <string.h>   //memcmp
 
-//total number of previous test: 226
-//total number of current test:  277
+//total number of previous test: 277
+//total number of current test:  346
 
-//去掉CH04 这个开关
+//去掉CH05 这个开关
 
-//CH05作为CH04新增的测试用例的开关，
+//CH06作为CH05新增的测试用例的开关，
 //1表示加入这些新的测试用例，0表示关闭；
 //这样很容易比较与之前一章的测试用例不同点
-#define CH05 1
+#define CH06 1
 
 
 //主函数的返回值，0为正常返回，非0存在错误
@@ -178,7 +178,7 @@ static void test_parse_string()
 			EXPECT_EQ_INT(LEPT_ARRAY, lept_get_type(&exptVal));\
 			EXPECT_EQ_SIZE_T(size, lept_get_array_size(&exptVal));\
 		}while(0)
-#if CH05
+
 //测试array型解析
 static void test_parse_array()
 {
@@ -219,7 +219,70 @@ static void test_parse_array()
 	}
 	lept_free(&val);
 }
-#endif
+
+#define TEST_OBJECT_PARTIAL(exptVal, actu, size) \
+		do{\
+			EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&exptVal, actu));\
+			EXPECT_EQ_INT(LEPT_OBJECT, lept_get_type(&exptVal));\
+			EXPECT_EQ_SIZE_T(size, lept_get_object_size(&exptVal));\
+		}while(0)
+
+//测试object类型解析
+static void test_parse_object()
+{
+	lept_value val;
+	size_t i;
+	lept_init(&val);
+	TEST_OBJECT_PARTIAL(val, " { } ", 0);
+	lept_free(&val);
+
+	lept_init(&val);
+	TEST_OBJECT_PARTIAL(val,
+						" { "
+						"\"n\" : null , "
+						"\"f\" : false , "
+						"\"t\" : true , "
+						"\"i\" : 123 , "
+						"\"s\" : \"abc\", "
+						"\"a\" : [ 1, 2, 3 ],"
+						"\"o\" : { \"1\" : 1, \"2\" : 2, \"3\" : 3 }"
+						" } ", 7);
+	EXPECT_EQ_STRING("n", lept_get_object_key(&val, 0), lept_get_object_key_length(&val, 0));
+	EXPECT_EQ_INT(LEPT_NULL, lept_get_type(lept_get_object_value(&val, 0)));
+	EXPECT_EQ_STRING("f", lept_get_object_key(&val, 1), lept_get_object_key_length(&val, 1));
+	EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(lept_get_object_value(&val, 1)));
+	EXPECT_EQ_STRING("t", lept_get_object_key(&val, 2), lept_get_object_key_length(&val, 2));
+	EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(lept_get_object_value(&val, 2)));
+	EXPECT_EQ_STRING("i", lept_get_object_key(&val, 3), lept_get_object_key_length(&val, 3));
+	EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(lept_get_object_value(&val, 3)));
+	EXPECT_EQ_DOUBLE(123.0, lept_get_number(lept_get_object_value(&val, 3)));
+	EXPECT_EQ_STRING("s", lept_get_object_key(&val, 4), lept_get_object_key_length(&val, 4));
+	EXPECT_EQ_INT(LEPT_STRING, lept_get_type(lept_get_object_value(&val, 4)));
+	EXPECT_EQ_STRING("abc", lept_get_string(lept_get_object_value(&val, 4)), lept_get_string_length(lept_get_object_value(&val, 4)));
+	EXPECT_EQ_STRING("a", lept_get_object_key(&val, 5), lept_get_object_key_length(&val, 5));
+	EXPECT_EQ_INT(LEPT_ARRAY, lept_get_type(lept_get_object_value(&val, 5)));
+	EXPECT_EQ_SIZE_T(3, lept_get_array_size(lept_get_object_value(&val, 5)));
+	for(i = 0; i < 3; i++)
+	{
+		lept_value* e = lept_get_array_element(lept_get_object_value(&val, 5), i);
+		EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(e));
+		EXPECT_EQ_DOUBLE(i + 1.0, lept_get_number(e));
+	}
+	EXPECT_EQ_STRING("o", lept_get_object_key(&val, 6), lept_get_object_key_length(&val, 6));
+	{
+		lept_value* o = lept_get_object_value(&val, 6);
+		EXPECT_EQ_INT(LEPT_OBJECT, lept_get_type(o));
+		for(i = 0; i < 3; i++)
+		{
+			lept_value* ov = lept_get_object_value(o, i);
+			EXPECT_EQ_INT('1' + i,  lept_get_object_key(o, i)[0]);
+			EXPECT_EQ_SIZE_T(1, lept_get_object_key_length(o, i));
+			EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(ov));
+			EXPECT_EQ_DOUBLE(i + 1.0, lept_get_number(ov));
+		}
+	}
+	lept_free(&val);
+}
 
 //测试正确解析出类型的JSON元素
 static void test_parse_ok()
@@ -230,9 +293,11 @@ static void test_parse_ok()
 	test_parse_number();
 	//测试字符串
 	test_parse_string();
-#if CH05
 	//测试数组
 	test_parse_array();
+#if CH06
+	//测试对象
+	test_parse_object();
 #endif
 }
 
@@ -258,12 +323,12 @@ static void test_parse_invalid_value()
 	TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "inf");
 	TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "NAN");
 	TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "nan");
-#if CH05
+
 	//NOTE: int a[] = {1,2,};  在C语言可以正确解析为int a[2] = {1, 2};
 	//但是在JSON文本中是错误的数组文本
 	TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "[1,]");
 	TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "[\"a\", nul]");
-#endif
+
 }
 
 //测试不止是是单种类型
@@ -278,14 +343,12 @@ static void test_parse_root_not_singular()
 	TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0x123");
 }
 
-
 //测试新的返回错误，解析的数值过大
 static void test_parse_number_too_big()
 {
 	TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "1e309");
 	TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "-1e309");
 }
-
 
 //测试缺少后一个引号的情况
 static void test_parse_missing_quotation_mark()
@@ -337,12 +400,42 @@ static void test_parse_invalid_unicode_surrogate()
 	TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uD800\\uE000\"");
 }
 
+//测试解析数组时，缺少逗号，或者方括号的情况
 static void test_parse_miss_comma_or_square_bracket()
 {
 	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET, "[1");
 	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET, "[1}");
 	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET, "[1 2");
 	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET, "[[]");
+}
+
+//测试解析对象时，缺少关键字的情况
+static void test_parse_miss_key()
+{
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{1:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{true:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{false:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{null:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{[]:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{{}:1,");
+	TEST_ERROR(LEPT_PARSE_MISS_KEY, "{\"a\":1,");
+}
+
+//测试解析对象时，缺少冒号:的情况
+static void test_parse_miss_colon()
+{
+	TEST_ERROR(LEPT_PARSE_MISS_COLON, "{\"a\"}");
+	TEST_ERROR(LEPT_PARSE_MISS_COLON, "{\"a\",\"b\"}");
+}
+
+//测试解析对象时，缺少逗号,或者花括号的情况
+static void test_parse_miss_comma_or_curly_bracket()
+{
+	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET, "{\"a\":1");
+	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET, "{\"a\":1]");
+	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET, "{\"a\":1 \"b\"");
+	TEST_ERROR(LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET, "{\"a\":{}");
 }
 
 //总测试JSON解析器的解析部分
@@ -358,8 +451,11 @@ static void test_parse()
 	test_parse_invalid_string_char();
 	test_parse_invalid_unicode_hex();
 	test_parse_invalid_unicode_surrogate();
-#if CH05
 	test_parse_miss_comma_or_square_bracket();
+#if CH06
+	test_parse_miss_key();
+	test_parse_miss_colon();
+	test_parse_miss_comma_or_curly_bracket();
 #endif
 }
 
