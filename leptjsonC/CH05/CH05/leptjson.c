@@ -31,7 +31,7 @@
 
 //要解析的上下文文本类型
 //为了存储解析到的字符串，设置一个stack,
-//其中top指向栈顶元素的下一个位置，sz表示栈的大小
+//其中top指向栈顶元素的下一个位置，size表示栈的空间大小， size和top的单位都是字节
 //栈空为top==0, 栈满为top == size
 typedef struct
 {
@@ -244,6 +244,7 @@ static void lept_encode_utf8(lept_context* c, unsigned int uInt)
 //解析string数据元素
 static int lept_parse_string(lept_context* c, lept_value* v)
 {
+	//注意此处必须有head，因为head可能不为0；详见解析数组时，上下文c的栈可能已经存在元素，因此head可能不为0；
 	size_t head = c->top, len;
 	unsigned int uInt = 0, uInt2 = 0;
 	const char* p;
@@ -372,8 +373,9 @@ static int lept_parse_array(lept_context* c, lept_value* v)
 			v->uni.arr.size = size;
 			//size表示元素的个数， sz表示所有元素所占空间的大小
 			int sz = size * sizeof(lept_value);
+			//对JSON元素v里面的数组的指针分配sz大小空间，用来存放size个lept_value元素，此时未赋值
 			v->uni.arr.e = (lept_value*)malloc(sz);
-			//删除上下文栈顶的元素
+			//将JSON上下文的c的栈顶top后移sz,同时将c的栈赋值给v->uni.arr.e指向的空间
 			memcpy((void*)v->uni.arr.e, lept_context_pop(c, sz), sz);
 			return LEPT_PARSE_OK;
 		}

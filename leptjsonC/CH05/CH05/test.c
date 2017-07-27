@@ -3,7 +3,7 @@
 #include <string.h>   //memcmp
 
 //total number of previous test: 226
-//total number of current test:  238
+//total number of current test:  274
 
 //去掉CH04 这个开关
 
@@ -190,6 +190,9 @@ static void test_parse_array()
 	lept_free(&val);
 
 	lept_init(&val);
+	TEST_ARRAY_PARTIAL(val, "[ false , true , 123 , \"abc\" , [ \"\\\"\\\"\", \"fs\" ] ]", 5);
+
+	lept_init(&val);
 	TEST_ARRAY_PARTIAL(val, "[ null , false , true , 123 , \"abc\" ]", 5);
 	EXPECT_EQ_INT(LEPT_NULL, lept_get_type(lept_get_array_element(&val, 0)));
 	EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(lept_get_array_element(&val, 1)));
@@ -227,6 +230,10 @@ static void test_parse_ok()
 	test_parse_number();
 	//测试字符串
 	test_parse_string();
+#if CH05
+	//测试数组
+	test_parse_array();
+#endif
 }
 
 //测试期待值的情况，这种情况都是只有空白符的情况
