@@ -1,0 +1,12 @@
+*.tar.gz
+*.obj
+*.lib
+*.res
+*.sln
+*.suo
+*.ncb
+*.vcproj
+*.user
+*.idb
+*.pdb
+*.exe
