@@ -1,4 +1,5 @@
 ﻿  test.c
-c:\users\josan\jsonparse\leptjsonc\ch05\ch05\test.c(189): warning C4013: “lept_get_array_size”未定义；假设外部返回 int
+  leptjson.c
+  正在生成代码...
   CH05.vcxproj -> C:\Users\Josan\JsonParse\leptjsonC\CH05\Debug\CH05.exe
   CH05.vcxproj -> C:\Users\Josan\JsonParse\leptjsonC\CH05\Debug\CH05.pdb (Full PDB)
