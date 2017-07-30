@@ -5,8 +5,13 @@
 *.sln
 *.suo
 *.ncb
-*.vcproj
+*.vcxproj
+*.filters
 *.user
 *.idb
 *.pdb
 *.exe
+*.db
+*.opendb
+*/.vs
+*/Debug
