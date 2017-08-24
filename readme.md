@@ -26,13 +26,14 @@ Json是由[道格拉斯·克罗克福特](https://en.wikipedia.org/wiki/Douglas_
 ## 项目进展
 
 - [x] leptjsonC
-- [x] leptjsonC-CH01 null和boolean型解析
-- [x] leptjsonC-CH02 number型解析
-- [x] leptjsonC-CH03 string型解析1
-- [x] leptjsonC-CH04 string型解析2
-- [x] leptjsonC-CH05 array型解析
-- [x] leptjsonC-CH06 object型解析
-- [x] leptjsonC-CH07 JSON生成器
+	- [x] leptjsonC-CH01 null和boolean型解析
+	- [x] leptjsonC-CH02 number型解析
+	- [x] leptjsonC-CH03 string型解析1
+	- [x] leptjsonC-CH04 string型解析2
+	- [x] leptjsonC-CH05 array型解析
+	- [x] leptjsonC-CH06 object型解析
+	- [x] leptjsonC-CH07 JSON生成器
+	- [x] 20170824 加入内存泄漏检查（MS CRT） 
 - [ ] leptjsonCplusplus
 - [ ] JSON11
 ## 相关资料
