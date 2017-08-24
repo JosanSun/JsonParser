@@ -1,3 +1,7 @@
+#define _WINDOWS 1
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>    //NULL strtod()
+#include <crtdbg.h>
 #include "leptjson.h"
 #include <stdio.h>
 #include <string.h>   //memcmp
@@ -316,10 +320,13 @@ static void test_access_number()
 		lept_init(&val);\
 		lept_set_string(&val, expt, len);\
 		EXPECT_EQ_STRING(expt, lept_get_string(&val), lept_get_string_length(&val));\
+		/*第一版的时候，这个丢失导致内存泄漏*/\
+		lept_free(&val); \
 	}while(0)
 //测试接入string元素
 static void test_access_string()
 {
+	//这里面存在内存泄漏。
 	TEST_ACCESS_STRING("", 0);
 	TEST_ACCESS_STRING("Hello", 5);
 }
@@ -348,6 +355,9 @@ static void test()
 
 int main()
 {
+#ifdef _WINDOWS
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	//总测试器
 	test();
 	printf("%d/%d  (%3.2f%%) passed\n", test_pass, test_cnt, test_pass*100.0 / test_cnt);

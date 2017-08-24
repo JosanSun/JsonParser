@@ -1,6 +1,8 @@
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>    //NULL strtod()
+#include <crtdbg.h>
 #include "leptjson.h"
 #include <assert.h>    //assert()
-#include <stdlib.h>    //NULL strtod()
 #include <errno.h>     //errno, ERANGE, malloc(), realloc(), free()
 #include <ctype.h>     //isdigit()
 #include <math.h>      //HUGE_VAL

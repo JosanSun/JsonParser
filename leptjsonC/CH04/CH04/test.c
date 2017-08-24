@@ -1,3 +1,8 @@
+// _WINDOWS打开内存泄漏检查开关
+#define _WINDOWS 1
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 #include "leptjson.h"
 #include <stdio.h>
 #include <string.h>   //memcmp
@@ -292,8 +297,6 @@ static void test_parse()
 	do {\
 		lept_value val;\
 		lept_init(&val);\
-		/* 这是是会产生内存泄漏的 */  \
-		/*lept_set_string(&val, "a", 1);*/\
 		lept_set_null(&val);\
 		EXPECT_EQ_INT(expt, lept_get_type(&val));\
 		lept_free(&val);\
@@ -312,8 +315,6 @@ static void test_access_null()
 	do {\
 		lept_value val;\
 		lept_init(&val);\
-		/* 这是是会产生内存泄漏的 */  \
-		/*lept_set_string(&val, "a", 1);*/\
 		lept_set_boolean(&val, n);\
 		EXPECT_EQ_BOOLEAN((expt_type == lept_get_boolean(&val)), expt,\
 			(n == 1 ? "true" : "false"));\
@@ -330,8 +331,6 @@ static void test_access_boolean()
 	do {\
 		lept_value val;\
 		lept_init(&val);\
-		/* 这是是会产生内存泄漏的 */  \
-		/*lept_set_string(&val, "a", 1);*/\
 		lept_set_number(&val, expt);\
 		EXPECT_EQ_DOUBLE(expt, lept_get_number(&val));\
 		lept_free(&val);\
@@ -351,7 +350,8 @@ static void test_access_number()
 		lept_init(&val);\
 		lept_set_string(&val, expt, len);\
 		EXPECT_EQ_STRING(expt, lept_get_string(&val), lept_get_string_length(&val));\
-		lept_free(&val);\
+		/*第一版的时候，缺少lept_free(), 导致内存泄漏*/\
+		lept_free(&val); \
 	}while(0)
 //测试接入string元素
 static void test_access_string()
@@ -380,6 +380,9 @@ static void test()
 
 int main()
 {
+#ifdef _WINDOWS
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	//总测试器
 	test();
 	printf("%d/%d  (%3.2f%%) passed\n", test_pass, test_cnt, test_pass*100.0 / test_cnt);

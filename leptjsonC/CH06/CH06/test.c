@@ -1,9 +1,14 @@
+// _WINDOWS打开内存泄漏检查开关
+#define _WINDOWS 1
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 #include "leptjson.h"
 #include <stdio.h>
 #include <string.h>   //memcmp
 
-//total number of previous test: 277
-//total number of current test:  346
+//total number of previous test: 289
+//total number of current test:  358
 
 //去掉CH05 这个开关
 
@@ -74,6 +79,7 @@ static int test_pass = 0;
 		EXPECT_EQ_DOUBLE(expt, lept_get_number(&val));\
 		lept_free(&val);\
 	}while(0)
+
 //TEST_STRING用来测试字符串类型，CH03新增部分
 #define TEST_STRING(expt, json)\
 	do {\
@@ -191,6 +197,22 @@ static void test_parse_array()
 
 	lept_init(&val);
 	TEST_ARRAY_PARTIAL(val, "[ false , true , 123 , \"abc\" , [ \"\\\"\\\"\", \"fs\" ] ]", 5);
+	EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(lept_get_array_element(&val, 0)));
+	EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(lept_get_array_element(&val, 1)));
+	EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(lept_get_array_element(&val, 2)));
+	EXPECT_EQ_INT(LEPT_STRING, lept_get_type(lept_get_array_element(&val, 3)));
+	EXPECT_EQ_DOUBLE(123.0, lept_get_number(lept_get_array_element(&val, 2)));
+	EXPECT_EQ_STRING("abc", lept_get_string(lept_get_array_element(&val, 3)), lept_get_string_length(lept_get_array_element(&val, 3)));
+	lept_value* a1 = lept_get_array_element(&val, 4);
+	EXPECT_EQ_INT(LEPT_ARRAY, lept_get_type(a1));
+	EXPECT_EQ_SIZE_T(2, lept_get_array_size(a1));
+	lept_value* b1 = lept_get_array_element(a1, 0);
+	EXPECT_EQ_INT(LEPT_STRING, lept_get_type(b1));
+	EXPECT_EQ_STRING("\"\"", lept_get_string(b1), lept_get_string_length(b1));
+	lept_value* b2 = lept_get_array_element(a1, 1);
+	EXPECT_EQ_INT(LEPT_STRING, lept_get_type(b2));
+	EXPECT_EQ_STRING("fs", lept_get_string(b2), lept_get_string_length(b2));
+	lept_free(&val);
 
 	lept_init(&val);
 	TEST_ARRAY_PARTIAL(val, "[ null , false , true , 123 , \"abc\" ]", 5);
@@ -552,6 +574,9 @@ static void test()
 
 int main()
 {
+#ifdef _WINDOWS
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	//总测试器
 	test();
 	printf("%d/%d  (%3.2f%%) passed\n", test_pass, test_cnt, test_pass*100.0 / test_cnt);

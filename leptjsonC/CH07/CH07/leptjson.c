@@ -1,7 +1,10 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>    //NULL strtod()
+#include <crtdbg.h>
 #include "leptjson.h"
 #include <assert.h>    //assert()
-#include <stdlib.h>    //NULL strtod()
+#include <stdlib.h>    
 #include <errno.h>     //errno, ERANGE, malloc(), realloc(), free()
 #include <ctype.h>     //isdigit()
 #include <math.h>      //HUGE_VAL
@@ -349,6 +352,7 @@ static int lept_parse_string(lept_context* c, lept_value* v)
 	if(LEPT_PARSE_OK == ret)
 	{
 		lept_set_string(v, s, len);
+		free(s);
 	}
 	return ret;
 }

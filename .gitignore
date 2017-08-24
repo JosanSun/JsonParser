@@ -1,17 +1,35 @@
-*.tar.gz
-*.obj
-*.lib
-*.res
-*.sln
+# User-specific files
 *.suo
-*.ncb
+*.user
+*.userosscache
+*.sln.docstates
+
+# 忽略项目文件
 *.vcxproj
 *.filters
+
+*.obj
+*.log
+*.pdb
+*.idb
+
+*.sln
+*.db
+
+# other
+*.tar.gz
+*.lib
+*.res
+*.suo
+*.ncb
 *.user
 *.idb
 *.pdb
 *.exe
 *.db
 *.opendb
-*/.vs
-*/Debug
+
+# leptjsonC/CH0[1-7]/Debug/
+leptjsonC/CH0?/Debug/
+leptjsonC/CH0?/CH0?/Debug/
+leptjsonC/CH0?/.vs/
