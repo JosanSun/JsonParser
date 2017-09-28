@@ -35,6 +35,8 @@ Json是由[道格拉斯·克罗克福特](https://en.wikipedia.org/wiki/Douglas_
 	- [x] leptjsonC-CH07 JSON生成器
 	- [x] 20170824 加入内存泄漏检查（MS CRT） 
 - [ ] leptjsonCplusplus
+	- [x] leptjsonCplusplus version 1.0 20170928 OK
+	将leptjsonC转化为C++形式，通过所有测试用例
 - [ ] JSON11
 ## 相关资料
 
