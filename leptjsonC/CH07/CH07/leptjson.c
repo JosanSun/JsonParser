@@ -329,6 +329,9 @@ static int lept_parse_string_raw(lept_context* c, char** s, size_t* l)
 		case '\0':
 			//缺少结尾
 			STRING_ERROR(LEPT_PARSE_MISS_QUOTATION_MARK);
+			break;
+			//这里缺少break居然能通过测试？
+			//看来c的安全性确实比C++低很多。
 		default:
 			//对于ASCII值小于0x20，认为是非法字符
 			if((unsigned char)ch < 0x20)
