@@ -34,10 +34,16 @@ Json是由[道格拉斯·克罗克福特](https://en.wikipedia.org/wiki/Douglas_
 	- [x] leptjsonC-CH06 object型解析
 	- [x] leptjsonC-CH07 JSON生成器
 	- [x] 20170824 加入内存泄漏检查（MS CRT） 
-- [ ] leptjsonCplusplus
+- [X] leptjsonCplusplus
 	- [x] leptjsonCplusplus version 1.0 20170928 OK
 	将leptjsonC转化为C++形式，通过所有测试用例
-- [ ] JSON11
+- [X] JSON11  
+	Json11源代码已看懂。  20170929  OK
+	
+- [ ] 自己继续造轮子方向
+	- [ ] 尝试加入异常机制来修改错误解析的情况
+	- [ ] 尽可能加入智能指针
+	
 ## 相关资料
 
 1. [JSON][1]介绍

@@ -29,6 +29,8 @@
 *.db
 *.opendb
 
+**oth**
+
 # leptjsonC/CH0[1-7]/Debug/
 leptjsonC/CH0?/Debug/
 leptjsonC/CH0?/CH0?/Debug/
